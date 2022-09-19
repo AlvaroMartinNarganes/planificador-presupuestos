@@ -4,17 +4,29 @@ import Mensaje from './Mensaje';
 type Props = {
   presupuesto: number;
   setPresupuesto: React.Dispatch<React.SetStateAction<number>>;
+  isValidPresupuesto: boolean;
+  setIsValidPresupuesto: React.Dispatch<React.SetStateAction<boolean>>;
 };
-const NuevoPresupuesto = ({ presupuesto, setPresupuesto }: Props) => {
+
+const NuevoPresupuesto = ({
+  presupuesto,
+  setPresupuesto,
+  isValidPresupuesto,
+  setIsValidPresupuesto,
+}: Props) => {
   const [mensaje, setMensaje] = useState('');
 
+  //Validar presupuesto
   const handlePresupuesto = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (!Number(presupuesto) || Number(presupuesto) < 0) {
+    //No valido
+    if (!presupuesto || Number(presupuesto) < 0) {
       setMensaje('Presupuesto invalido');
       return;
     }
+    //Valido
     setMensaje('');
+    setIsValidPresupuesto(true);
   };
 
   return (
@@ -23,10 +35,10 @@ const NuevoPresupuesto = ({ presupuesto, setPresupuesto }: Props) => {
         <div className='campo'>
           <label htmlFor=''>Definir presupuesto</label>
           <input
-            type='text'
+            type='number'
             className='nuevo-presupuesto'
             value={presupuesto}
-            onChange={(e: any) => setPresupuesto(e.target.value)}
+            onChange={(e: any) => setPresupuesto(Number(e.target.value))}
           />
         </div>
         <input type='submit' value='Añadir' />

@@ -1,16 +1,25 @@
 import React, { useState } from 'react';
+import { Gasto } from '../App';
 import CerrarBoton from '../assets/cerrar.svg';
+import Mensaje from './Mensaje';
 
 type Props = {
   setModal: React.Dispatch<React.SetStateAction<boolean>>;
   animarModal: boolean;
   setAnimarModal: React.Dispatch<React.SetStateAction<boolean>>;
+  guardarGasto: (gasto: Gasto) => void;
 };
 
-const Modal = ({ setModal, animarModal, setAnimarModal }: Props) => {
+const Modal = ({
+  setModal,
+  animarModal,
+  setAnimarModal,
+  guardarGasto,
+}: Props) => {
   const [nombre, setNombre] = useState('');
   const [cantidad, setCantidad] = useState<number>();
   const [categoria, setCategoria] = useState('');
+  const [mensaje, setMensaje] = useState('');
 
   const cerrarModal = () => {
     setAnimarModal(false);
@@ -19,16 +28,27 @@ const Modal = ({ setModal, animarModal, setAnimarModal }: Props) => {
     }, 400);
   };
 
+  const handleSubmit = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    if ([nombre, cantidad, categoria].includes('')) {
+      setMensaje('Todos los campos son necesarios');
+      return;
+    }
+    setMensaje('');
+    guardarGasto({ nombre, cantidad, categoria });
+  };
+
   return (
     <div className='modal'>
       <div className='cerrar-modal'>
         <img src={CerrarBoton} alt='Boton Cerrar' onClick={cerrarModal} />
       </div>
       <form
-        action=''
+        onSubmit={handleSubmit}
         className={`formulario ${animarModal ? 'animar' : 'cerrar'}`}
       >
         <legend>NUEVO GASTO</legend>
+        {mensaje && <Mensaje tipo={'error'} mensaje={mensaje} />}
         <div className='campo'>
           <label htmlFor='nombre'>Nombre Gasto</label>
           <input
@@ -45,7 +65,7 @@ const Modal = ({ setModal, animarModal, setAnimarModal }: Props) => {
             type='number'
             placeholder='Cantidad gastada'
             id='cantidad'
-            value={cantidad}
+            value={cantidad || ''}
             onChange={(e) => setCantidad(Number(e.target.value))}
           />
         </div>
